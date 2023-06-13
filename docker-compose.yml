@@ -20,7 +20,7 @@ services:
 
     backend:
       container_name: worklog_backend
-      build: /.
+      build: ./
       restart: always
       command: uvicorn main:app --reload --host 0.0.0.0
       env_file:
