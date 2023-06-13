@@ -1,0 +1,45 @@
+version: '3.3'
+networks:
+  wl-net:
+    driver: bridge
+    attachable: true
+services:
+    worklog_db:
+      container_name: worklog_postgres
+      image: postgres:13.0-alpine
+      env_file:
+        - .envs/.env_db
+      ports:
+        - "6666:5432"
+      volumes: 
+        - pgdata:/var/lib/postgresql/data/
+      networks:
+        wl-net:
+          aliases:
+            - worklog_database
+
+    backend:
+      container_name: worklog_backend
+      build: /.
+      restart: always
+      command: uvicorn main:app --reload --host 0.0.0.0
+      env_file:
+        - .envs/.env
+        - .envs/.env_db
+      ports:
+        - "8765:8000"
+      environment:
+        - ./envs/.env
+      volumes:
+        - .:/backend
+      depends_on:
+        - worklog_db
+      networks:
+        wl-net:
+          aliases:
+            - worklog_backend
+
+volumes:
+  pgdata:
+
+    
