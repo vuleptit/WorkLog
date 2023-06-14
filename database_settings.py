@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, as_declarative, declared_attr, relation
 
 user_name = os.getenv('POSTGRES_USER')
 password = os.getenv('POSTGRES_PASSWORD')
-SQLALCHEMY_DATABASE_URL = f'postgresql://{user_name}:{password}@postgresserver/db'
+SQLALCHEMY_DATABASE_URL = f'postgresql://{user_name}:{password}@worklog_db:5432/worklog'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -25,6 +25,11 @@ class Base(object):
     modified_date =  Column(DateTime, server_default=func.now())
     created_by = Column(Integer, ForeignKey('users.id'))
 
-    
 
-
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
