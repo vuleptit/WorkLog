@@ -6,5 +6,4 @@ class Project(Base):
     __tablename__ = 'project'
     
     name = Column(String)
-    # user = relationship('users')
     code_on_jira = Column(String)

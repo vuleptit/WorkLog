@@ -5,14 +5,12 @@ from sqlalchemy.types import DateTime
 
 class DailyChecklist(Base):
     __tablename__ = 'daily_checklist'
+    
     name = Column(String)
     parent_checklist_id = Column(Integer)
-    created_date = Column(DateTime)
     user_id =  Column(Integer, ForeignKey('users.id'))
     is_completed = Column(Boolean)
     estimation_time = Column(Numeric(19, 2))
-    # user = relationship('users')
     task_id = Column(Integer, ForeignKey('task.id'))
     time_estimated = Column(Numeric(19, 2))
-    # DailyChecklist.user
     

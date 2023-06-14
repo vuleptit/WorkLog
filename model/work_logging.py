@@ -7,8 +7,5 @@ class WorkLogging(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     task_id =  Column(Integer, ForeignKey('task.id'))
-    # user = relationship('users')
     time_spent = Column(TIMESTAMP)
     user_id = Column(Integer, ForeignKey('users.id'))
-    created_date = Column(TIMESTAMP)
-    created_by = Column(Integer)

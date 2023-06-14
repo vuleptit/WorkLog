@@ -6,6 +6,5 @@ class Task(Base):
     __tablename__ = 'task'
     
     name = Column(String)
-    # user = relationship('users')
     project_id = Column(Integer, ForeignKey('project.id'))
     code_on_jira = Column(Integer)
