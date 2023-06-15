@@ -11,7 +11,7 @@ def get_task(id: int, db: Session = Depends(get_db)) -> TaskBase:
     return task
 
 
-@router.post('/new/')
+@router.post('/create/')
 def register(task_data: TaskBase, db: Session = Depends(get_db)) -> TaskBase:
     result = create_or_update_task(db=db, task_data=task_data)
     return result

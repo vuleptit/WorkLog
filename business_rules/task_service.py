@@ -11,8 +11,8 @@ def create_or_update_task(db: Session, task_data: TaskBase):
     if task_data.id <= 0:
         # Create new Task
         task_item = Task()
-        update_fields = ["name", "project_id", "code_on_jira"]
-        for field in update_fields:
+        create_fields = ["id", "name", "project_id", "code_on_jira"]
+        for field in create_fields:
             setattr(task_item, field, getattr(task_data, field))
         db.add(task_item)
         db.commit()
@@ -21,7 +21,7 @@ def create_or_update_task(db: Session, task_data: TaskBase):
     else:
         # Update
         task_in_db = get_task_by_id(db=db, task_id=task_data.id)
-        update_fields = ["name", "project_id", "code_on_jira"]
+        update_fields = ["id", "name", "project_id", "code_on_jira"]
         for field in update_fields:
             setattr(task_item, field, getattr(task_data, field))
         db.commit()

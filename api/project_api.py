@@ -1,18 +1,23 @@
 from fastapi import APIRouter, Depends
 
-from business_rules.user_services import *
+from business_rules.project_service import *
 from database_settings import get_db
 
 router = APIRouter()
 
+@router.get('/{id}')
+def get_project(id: int, db: Session = Depends(get_db)) -> ProjectBase:
+    project = get_project_by_id(db=db, project_id=id)
+    return project
 
-@router.post('/new/')
-def register(user_data: UserCreate, db: Session = Depends(get_db)) -> UserBase:
-    result = create_or_update_user(db=db, user_data=user_data)
+
+@router.post('/create/')
+def register(project_data: ProjectBase, db: Session = Depends(get_db)) -> ProjectBase:
+    result = create_or_update_project(db=db, project_data=project_data)
     return result
 
 
 @router.post('/remove/{id}')
-def register(id: int, db: Session = Depends(get_db)) -> UserBase:
-    result = delete_user(db=db, user_id=id)
+def register(id: int, db: Session = Depends(get_db)) -> ProjectBase:
+    result = delete_project(db=db, project_id=id)
     return result
