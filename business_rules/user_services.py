@@ -5,9 +5,7 @@ from business_rules.view_models.user_dto import *
 
 def get_user_by_id(db: Session, user_id: int):
     user_query = db.query(User).where(User.id == user_id)
-
     return user_query.first()
-
 
 def create_or_update_user(db: Session, user_data: UserCreate):
     if user_data.id <= 0:
@@ -26,15 +24,23 @@ def create_or_update_user(db: Session, user_data: UserCreate):
         return user_item
     else:
         # Update
-        user_in_db = get_user_by_id(user_data.id)
+        user_in_db = get_user_by_id(db=db, user_id=user_data.id)
         user_in_db.email = user_data.email
         user_in_db.password = user_data.password
         user_in_db.phone = user_data.phone
         user_in_db.user_name = user_data.user_name
         user_in_db.is_active = user_data.is_active
         user_in_db.is_admin = user_data.is_admin
-        return None
+        db.commit()
+        db.refresh(user_in_db)
+        print(type(user_in_db))
+        print(user_in_db)
+        return user_in_db
 
 def delete_user(db: Session, user_id: int):
-    user_query = db.query(User).where(User.id == user_id)
+    user_query = db.query(User).where(User.id == user_id).first()
     db.delete(user_query)
+    db.commit()
+    user_in_db = get_user_by_id(db=db, user_id=user_id)
+    return user_in_db
+    

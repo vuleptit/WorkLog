@@ -2,7 +2,6 @@ from typing import Union
 
 from pydantic import BaseModel
 
-
 class UserBase(BaseModel):
     id: int
     user_name: str
@@ -17,3 +16,4 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    

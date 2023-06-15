@@ -7,4 +7,4 @@ class Task(Base):
     
     name = Column(String)
     project_id = Column(Integer, ForeignKey('project.id'))
-    code_on_jira = Column(Integer)
+    code_on_jira = Column(String)
