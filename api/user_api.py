@@ -1,14 +1,20 @@
-from fastapi import APIRouter, Depends
-
+from fastapi import APIRouter, Depends, status, Response
 from business_rules.user_services import *
 from database_settings import get_db
+from api.utils.custom_response import ResponseModel
+import json
 
 router = APIRouter()
 
-@router.get('/{id}')
+@router.get('/{id}', response_model=ResponseModel)
 def get_user(id: int, db: Session = Depends(get_db)) -> UserBase:
     user = get_user_by_id(db=db, user_id=id)
-    return user
+    print(dir(user))
+    return ResponseModel(
+        message = "Get User successfully",
+        data = user,
+        status = status.HTTP_200_OK
+    )
 
 
 @router.post('/register/')

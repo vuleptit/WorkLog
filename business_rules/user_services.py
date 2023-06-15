@@ -4,8 +4,11 @@ from model.user import *
 from business_rules.view_models.user_dto import *
 
 def get_user_by_id(db: Session, user_id: int):
-    user_query = db.query(User).where(User.id == user_id)
-    return user_query.first()
+    user_query = db.query(User).where(User.id == user_id).first()
+    print(user_query.__dict__)
+    user = user_query.__dict__
+    # user = {key: value for key, value in user_query.__dict__.items() if not key.startswith('_')}
+    return user
 
 def create_or_update_user(db: Session, user_data: UserCreate):
     if user_data.id <= 0:
