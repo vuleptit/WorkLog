@@ -3,7 +3,6 @@ from typing import Union
 from pydantic import BaseModel
 
 class UserBase(BaseModel):
-    id: int
     user_name: str
     email: str
     phone: str
@@ -16,4 +15,16 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+
+class UserUpdate(BaseModel):
+    id: int
+    user_name: str
+    email: str
+    phone: str
+    password: str
+    is_active: bool
+    
+    class Config:
+        orm_mode = True
+
     
