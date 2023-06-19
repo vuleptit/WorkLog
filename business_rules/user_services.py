@@ -4,6 +4,9 @@ from model.user import *
 from business_rules.view_models.user_dto import *
 from api.utils.custom_response import ResponseModel
 from fastapi import status
+from .jwt_services import get_password_hash
+from fastapi import status
+
 
 def get_user_by_id(db: Session, user_id: int):
     try:
@@ -25,7 +28,6 @@ def get_user_by_id(db: Session, user_id: int):
             exception = exception
         )
         return response
-        
 
 def update_user(db: Session, user_data: UserUpdate):
     try:
@@ -63,14 +65,15 @@ def update_user(db: Session, user_data: UserUpdate):
             status = status.HTTP_404_NOT_FOUND,
             exception = exception
         )
-        return response 
-        
-def create_user(db: Session, user_data: UserCreate):
+        return response
+
+def create_user(db: Session, user_data: UserInDB):
     try:
         user_item = User()
-        create_fields = ["email", "password", "phone", "user_name", "is_active", "is_admin"]
+        create_fields = ["email", "phone", "user_name", "is_active", "is_admin"]
         for field in create_fields:
             setattr(user_item, field, getattr(user_data, field))
+        user_item.password = get_password_hash(user_data.password)
         db.add(user_item)
         db.commit()
         db.refresh(user_item)

@@ -13,7 +13,7 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
-class UserCreate(UserBase):
+class UserInDB(UserBase):
     password: str
 
 class UserUpdate(BaseModel):

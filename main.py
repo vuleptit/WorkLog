@@ -1,5 +1,5 @@
 from typing import Union
-from api import user_api, task_api, project_api
+from api import user_api, task_api, project_api, jwt_api
 
 from fastapi import FastAPI
 
@@ -20,3 +20,11 @@ app.include_router(
     prefix="/project",
     tags=["project]"]
 )
+
+app.include_router(
+    jwt_api.router,
+    prefix="/token",
+    tags=["token"]
+)
+
+

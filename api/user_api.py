@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, status, Response
+from fastapi import APIRouter, Depends, Form
 from business_rules.user_services import *
 from database_settings import get_db
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+
 router = APIRouter()
 
 @router.get('/{id}')
@@ -11,7 +10,7 @@ def get_user(id: int, db: Session = Depends(get_db)) -> UserBase:
     return result
 
 @router.post('/register/')
-def register(user_data: UserCreate, db: Session = Depends(get_db)) -> UserBase:
+def register(user_data: UserInDB, db: Session = Depends(get_db)) -> UserBase:
     result = create_user(db=db, user_data=user_data)
     return result
 
@@ -25,3 +24,9 @@ def update(user_data: UserUpdate, db: Session = Depends(get_db)) -> UserBase:
 def remove(id: int, db: Session = Depends(get_db)) -> UserBase:
     result = delete_user(db=db, user_id=id)
     return result
+
+@router.post('/test/')
+async def test(name: str = Form(...), email: str = Form(...), message: str = Form(...)):
+    # Handle the submitted form data here
+    # For example, you could send an email or add it to a database
+    return name
