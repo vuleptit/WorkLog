@@ -16,7 +16,6 @@ def register(user_data: UserInDB, db: Session = Depends(get_db)) -> UserBase:
 
 @router.put('/update/')
 def update(user_data: UserUpdate, db: Session = Depends(get_db)) -> UserBase:
-    print("asdfasdfasd")
     result = update_user(db=db, user_data=user_data)
     return result
 

@@ -7,7 +7,6 @@ from fastapi import status
 from .jwt_services import get_password_hash
 from fastapi import status
 
-
 def get_user_by_id(db: Session, user_id: int):
     try:
         user_query = db.query(User).where(User.id == user_id).first()
