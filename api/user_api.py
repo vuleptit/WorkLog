@@ -1,31 +1,35 @@
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends, Form, Response, responses
+from fastapi.responses import JSONResponse
 from business_rules.user_services import *
 from database_settings import get_db
+from fastapi.encoders import jsonable_encoder
+from api.utils.custom_response import CustomResponse
+from fastapi import HTTPException
 
 router = APIRouter()
 
-@router.get('/{id}')
-def get_user(id: int, db: Session = Depends(get_db)) -> UserBase:
-    result = get_user_by_id(db=db, user_id=id)
+@router.get('/all')
+def get_user(db: Session = Depends(get_db)):
+    result = get_all_users(db=db)
     return result
 
+@router.get('/{id}')
+def get_user(id: int, db: Session = Depends(get_db)):
+    result = get_user_by_id(db=db, user_id=id)
+    return JSONResponse(status_code=404, content=result.data)
+
 @router.post('/register/')
-def register(user_data: UserInDB, db: Session = Depends(get_db)) -> UserBase:
+def register(user_data: UserInDB, db: Session = Depends(get_db)):
     result = create_user(db=db, user_data=user_data)
     return result
 
 @router.put('/update/')
-def update(user_data: UserUpdate, db: Session = Depends(get_db)) -> UserBase:
+def update(response: Response, user_data: UserUpdate, db: Session = Depends(get_db)):
     result = update_user(db=db, user_data=user_data)
+    response.status_code = result.status
     return result
 
 @router.post('/remove/{id}')
-def remove(id: int, db: Session = Depends(get_db)) -> UserBase:
+def remove(id: int, db: Session = Depends(get_db)):
     result = delete_user(db=db, user_id=id)
     return result
-
-@router.post('/test/')
-async def test(name: str = Form(...), email: str = Form(...), message: str = Form(...)):
-    # Handle the submitted form data here
-    # For example, you could send an email or add it to a database
-    return name
