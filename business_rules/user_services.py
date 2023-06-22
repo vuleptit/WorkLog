@@ -7,7 +7,6 @@ from fastapi import status
 from .jwt_services import get_password_hash
 from fastapi import status, Form
 
-
 def get_all_users(db: Session):
     users = db.query(User).all()
     message = "Get users successfully"
@@ -16,23 +15,12 @@ def get_all_users(db: Session):
         data=users,
         status=status.HTTP_200_OK
     )
-    return response
-
-def get_all_users(db: Session):
-    users = db.query(User).all()
-    message = "Get users successfully"
-    response = CustomResponse(
-        message=message,
-        data=users,
-        status=status.HTTP_200_OK
-    )
-    
     return response
 
 def get_user_by_id(db: Session, user_id: int):
     try:
         user_query = db.query(User).where(User.id == user_id).first()
-        user = user_query.__dict__
+        user = user_query
         message = "Get user successfully"
         response = CustomResponse(
             message = message,
@@ -53,19 +41,28 @@ def get_user_by_id(db: Session, user_id: int):
 def update_user(db: Session, user_data: UserUpdate):
     try:
         user_in_db = db.query(User).where(User.id == user_data.id).first()
+        print(user_in_db)
         if user_in_db is not None:
-            update_fields = ["email", "password", "phone", "user_name", "is_active"]
+            update_fields = user_data.dict()
+            update_fields.pop('id')
+            for field in update_fields:
+                print(field)
+            print(type(update_fields))
+            print("((((((((((((((((()))))))))))))))))")
+            print(update_fields)
+            print("((((((((((((((((()))))))))))))))))")
+            
             for field in update_fields:
                 setattr(user_in_db, field, getattr(user_data, field))
         else:
             raise UserDoesNotExist
-        db.commit()
+        db.commit() 
         db.refresh(user_in_db)
         user = user_in_db.__dict__
         message = "Udpate user successfully"
         response = CustomResponse(
             message = message,
-            data = user_in_db.__dict__,
+            data = user,
             status = status.HTTP_201_CREATED
         )
         return response
@@ -124,12 +121,6 @@ def delete_user(db: Session, user_id: int):
         db.commit()
         user_in_db = get_user_by_id(db=db, user_id=user_id)
         message = "Delete user successfully"
-        response = CustomResponse(
-                message = message,
-                status = status.HTTP_200_OK
-        )
-        return user_in_db
-    except Exception as ex:
         if user_in_db.data is None:
             message = "Delete user successfully"
             response = CustomResponse(
@@ -142,7 +133,6 @@ def delete_user(db: Session, user_id: int):
     except Exception as DeleteUserException:
         message = "Deleted user failed"
         exception = f"User id {user_id} does not exist"
-        response = CustomResponse(
         response = CustomResponse(
             message = message,
             status = status.HTTP_404_NOT_FOUND,

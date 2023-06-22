@@ -9,7 +9,7 @@ from .jwt_services import get_password_hash
 
 def get_all_projects(db: Session):
     projects = db.query(Project).all()
-    message = "Get projects successfully"
+    message = "Successful"
     response = CustomResponse(
         message=message,
         data=projects,
@@ -21,7 +21,7 @@ def get_project_by_id(db: Session, project_id: int):
     try:
         project_query = db.query(Project).where(project.id == project_id).first()
         project = project_query.__dict__
-        message = "Get project successfully"
+        message = "Successuflly"
         response = CustomResponse(
             message = message,
             data = project,
@@ -29,14 +29,7 @@ def get_project_by_id(db: Session, project_id: int):
         )
         return response
     except Exception as ex:
-        message = "Get project failed"
-        exception = "project with given id does not exist"
-        response = CustomResponse(
-            message = message,
-            status = status.HTTP_404_NOT_FOUND,
-            exception = exception
-        )
-        return response
+        return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
 def update_project(db: Session, project_data: ProjectBase):
     try:
@@ -77,9 +70,8 @@ def update_project(db: Session, project_data: ProjectBase):
 
 def create_project(db: Session, project_data: ProjectBase):
     try:
-        project_item = project()
-        create_fields = ["email", "phone", "project_name", "is_active", "is_admin"]
-        project_item.password = get_password_hash(project_data.password)
+        project_item = Project()
+        create_fields = list(ProjectBase.__fields__.keys())
         for field in create_fields:
             setattr(project_item, field, getattr(project_data, field))
         db.add(project_item)
