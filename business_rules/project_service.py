@@ -4,8 +4,7 @@ from sqlalchemy import exc
 from model.project import *
 from business_rules.view_models.project_dto import *
 from api.utils.custom_response import CustomResponse
-from fastapi import status, Form
-from .jwt_services import get_password_hash
+from fastapi import status
 
 def get_all_projects(db: Session):
     projects = db.query(Project).all()
@@ -19,106 +18,97 @@ def get_all_projects(db: Session):
 
 def get_project_by_id(db: Session, project_id: int):
     try:
-        project_query = db.query(Project).where(project.id == project_id).first()
-        project = project_query.__dict__
-        message = "Successuflly"
-        response = CustomResponse(
-            message = message,
-            data = project,
-            status = status.HTTP_200_OK
-        )
-        return response
+        project= db.query(Project).where(Project.id == project_id).first()
+    
+        if project is not None:
+            return CustomResponse(
+                message = "Successfully",
+                data = project.__dict__,
+                status = status.HTTP_200_OK
+            )
+        else:
+            return CustomResponse(
+                message = f"Project with id {project_id} does not exist",
+                status = status.HTTP_400_BAD_REQUEST
+            )
     except Exception as ex:
+        print(ex)
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
-def update_project(db: Session, project_data: ProjectBase):
+def update_project(db: Session, project_data: ProjectUpdate):
     try:
-        project_in_db = db.query(Project).where(project_data.id == project_data.id).first()
-        if project_in_db is not None:
-            update_fields = ["email", "password", "phone", "project_name", "is_active"]
-            for field in update_fields:
-                setattr(project_in_db, field, getattr(project_data, field))
-        else:
-            raise ProjectDoesNotExist
+        project_in_db = db.query(Project).where(Project.id == project_data.id).first()
+        if project_in_db is None:
+            return CustomResponse(
+                message = "Failed",
+                exception = f"Project with id {project_data.id} does not exist",
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        update_fields = project_data.dict()
+        for field in update_fields.keys():
+            setattr(project_in_db, field, getattr(project_data, field))
         db.commit()
         db.refresh(project_in_db)
-        message = "Udpate project successfully"
         response = CustomResponse(
-            message = message,
+            message = "Successfully",
             data = project_in_db.__dict__,
             status = status.HTTP_201_CREATED
         )
         return response
-    except exc.SQLAlchemyError:
-        message = "Update project failed"
-        exception = f"project with email {project_data.email} already exist"
-        response = CustomResponse(
-            message = message,
+    except exc.IntegrityError:
+        print(sys.exc_info())
+        return CustomResponse(
+            message = "Failed",
             status = status.HTTP_404_NOT_FOUND,
-            exception = exception
+            exception = f"Project with name {project_data.name} already existed"
         )
-        return response
-    except Exception as ProjectDoesNotExist:
-        message = "Update project failed"
-        exception = f"project with given id {project_data.id} does not exist"
-        response = CustomResponse(
-            message = message,
-            status = status.HTTP_405_METHOD_NOT_ALLOWED,
-            exception = exception
-        )
-        return response
+    except Exception as ex:
+        print(sys.exc_info())
+        print(ex)
+        return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
-def create_project(db: Session, project_data: ProjectBase):
+
+def create_project(db: Session, project_data: ProjectCreate):
     try:
         project_item = Project()
-        create_fields = list(ProjectBase.__fields__.keys())
+        create_fields = list(ProjectCreate.__fields__.keys())
         for field in create_fields:
             setattr(project_item, field, getattr(project_data, field))
         db.add(project_item)
         db.commit()
         db.refresh(project_item)
-        project = project_item.__dict__
-        message = "Create project successfully"
         response = CustomResponse(
-            message = message,
-            data = project,
+            message = "Successfully",
+            data = project_item.__dict__,
             status = status.HTTP_200_OK
         )
         return response
-    except Exception as ex:
-        message = "Create project failed"
-        exception = f"project with email {project_data.email} already exist"
+    except exc.IntegrityError:
         response = CustomResponse(
-            message = message,
+            message = "Failed",
             status = status.HTTP_404_NOT_FOUND,
-            exception = exception
+            exception = f"project with name {project_data.name} already exist"
         )
         return response
-
+    except Exception as ex:
+        return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
 def delete_project(db: Session, project_id: int):
     try:
         project_query = db.query(Project).where(Project.id == project_id).first()
+        if project_query is None:
+            return CustomResponse(
+                message = "Failed",
+                status = status.HTTP_404_NOT_FOUND,
+                exception = f"project with id {project_id} does not exist"
+            )
         db.delete(project_query)
         db.commit()
-        project_in_db = get_project_by_id(db=db, project_id=project_id)
-        if project_in_db.data is None:
-            message = "Delete project successfully"
-            response = CustomResponse(
-                    message = message,
-                    status = status.HTTP_200_OK
+        return CustomResponse(
+                message = "Succesfully",
+                status = status.HTTP_200_OK,
             )
-            return response
-        else:
-            raise DeleteProjectException
-    except Exception as DeleteProjectException:
-        message = "Deleted project failed"
-        exception = f"project id {project_id} does not exist"
-        response = CustomResponse(
-            message = message,
-            status = status.HTTP_404_NOT_FOUND,
-            exception = exception
-        )
-        return response
+    except Exception as ex:
+        return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
         
     

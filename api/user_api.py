@@ -25,7 +25,7 @@ def register(user_data: UserInDB, db: Session = Depends(get_db)):
 @router.put('/update/')
 def update(response: Response, user_data: UserUpdate, db: Session = Depends(get_db)):
     result = update_user(db=db, user_data=user_data)
-    # response.status_code = result.status
+    response.status_code = result.status
     return result
 
 @router.post('/remove/{id}')

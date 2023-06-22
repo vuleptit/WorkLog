@@ -45,14 +45,7 @@ def update_user(db: Session, user_data: UserUpdate):
         if user_in_db is not None:
             update_fields = user_data.dict()
             update_fields.pop('id')
-            for field in update_fields:
-                print(field)
-            print(type(update_fields))
-            print("((((((((((((((((()))))))))))))))))")
-            print(update_fields)
-            print("((((((((((((((((()))))))))))))))))")
-            
-            for field in update_fields:
+            for field in update_fields.keys():
                 setattr(user_in_db, field, getattr(user_data, field))
         else:
             raise UserDoesNotExist
