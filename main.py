@@ -1,5 +1,5 @@
 from typing import Union
-from api import user_api, task_api, project_api, jwt_api
+from api import user_api, task_api, project_api, jwt_api, dailychecklist_api
 import time
 from fastapi import FastAPI, Response, Request
 
@@ -27,6 +27,12 @@ app.include_router(
     project_api.router,
     prefix="/project",
     tags=["project"]
+)
+
+app.include_router(
+    dailychecklist_api.router,
+    prefix="/checklist",
+    tags=["checklist"]
 )
 
 app.include_router(

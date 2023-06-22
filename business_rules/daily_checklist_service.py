@@ -1,56 +1,56 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from sqlalchemy import exc
-from model.task import *
-from business_rules.view_models.task_dto import *
+from model.daily_checklist import *
+from business_rules.view_models.daily_checklist_dto import *
 from api.utils.custom_response import CustomResponse
 from fastapi import status
 
-def get_all_tasks(db: Session):
-    tasks = db.query(Task).all()
+def get_all_daily_checklists(db: Session):
+    daily_checklists = db.query(DailyChecklist).all()
     message = "Successful"
     response = CustomResponse(
         message=message,
-        data=tasks,
+        data=daily_checklists,
         status=status.HTTP_200_OK
     )
     return response
 
-def get_task_by_id(db: Session, task_id: int):
+def get_daily_checklist_by_id(db: Session, daily_checklist_id: int):
     try:
-        task= db.query(Task).where(Task.id == task_id).first()
+        daily_checklist= db.query(DailyChecklist).where(DailyChecklist.id == daily_checklist_id).first()
     
-        if task is not None:
+        if daily_checklist is not None:
             return CustomResponse(
                 message = "Successfully",
-                data = task.__dict__,
+                data = daily_checklist.__dict__,
                 status = status.HTTP_200_OK
             )
         else:
             return CustomResponse(
-                message = f"Task with id {task_id} does not exist",
+                message = f"DailyChecklist with id {daily_checklist_id} does not exist",
                 status = status.HTTP_400_BAD_REQUEST
             )
     except Exception as ex:
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
-def update_task(db: Session, task_data: TaskUpdate):
+def update_daily_checklist(db: Session, daily_checklist_data: DailyChecklistUpdate):
     try:
-        task_in_db = db.query(Task).where(Task.id == task_data.id).first()
-        if task_in_db is None:
+        daily_checklist_in_db = db.query(DailyChecklist).where(DailyChecklist.id == daily_checklist_data.id).first()
+        if daily_checklist_in_db is None:
             return CustomResponse(
                 message = "Failed",
-                exception = f"Task with id {task_data.id} does not exist",
+                exception = f"DailyChecklist with id {daily_checklist_data.id} does not exist",
                 status = status.HTTP_400_BAD_REQUEST
             )
-        update_fields = task_data.dict()
+        update_fields = daily_checklist_data.dict()
         for field in update_fields.keys():
-            setattr(task_in_db, field, getattr(task_data, field))
+            setattr(daily_checklist_in_db, field, getattr(daily_checklist_data, field))
         db.commit()
-        db.refresh(task_in_db)
+        db.refresh(daily_checklist_in_db)
         response = CustomResponse(
             message = "Successfully",
-            data = task_in_db.__dict__,
+            data = daily_checklist_in_db.__dict__,
             status = status.HTTP_201_CREATED
         )
         return response
@@ -58,24 +58,24 @@ def update_task(db: Session, task_data: TaskUpdate):
         return CustomResponse(
             message = "Failed",
             status = status.HTTP_404_NOT_FOUND,
-            exception = f"Task with name {task_data.name} already existed"
+            exception = f"DailyChecklist with name {daily_checklist_data.name} already existed"
         )
     except Exception as ex:
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
 
-def create_task(db: Session, task_data: TaskCreate):
+def create_daily_checklist(db: Session, daily_checklist_data: DailyChecklistCreate):
     try:
-        task_item = Task()
-        create_fields = list(TaskCreate.__fields__.keys())
+        daily_checklist_item = DailyChecklist()
+        create_fields = list(DailyChecklistCreate.__fields__.keys())
         for field in create_fields:
-            setattr(task_item, field, getattr(task_data, field))
-        db.add(task_item)
+            setattr(daily_checklist_item, field, getattr(daily_checklist_data, field))
+        db.add(daily_checklist_item)
         db.commit()
-        db.refresh(task_item)
+        db.refresh(daily_checklist_item)
         response = CustomResponse(
             message = "Successfully",
-            data = task_item.__dict__,
+            data = daily_checklist_item.__dict__,
             status = status.HTTP_200_OK
         )
         return response
@@ -83,22 +83,22 @@ def create_task(db: Session, task_data: TaskCreate):
         response = CustomResponse(
             message = "Failed",
             status = status.HTTP_404_NOT_FOUND,
-            exception = f"task with name {task_data.name} already exist"
+            exception = f"daily_checklist with name {daily_checklist_data.name} already exist"
         )
         return response
     except Exception as ex:
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
-def delete_task(db: Session, task_id: int):
+def delete_daily_checklist(db: Session, daily_checklist_id: int):
     try:
-        task_query = db.query(Task).where(Task.id == task_id).first()
-        if task_query is None:
+        daily_checklist_query = db.query(DailyChecklist).where(DailyChecklist.id == daily_checklist_id).first()
+        if daily_checklist_query is None:
             return CustomResponse(
                 message = "Failed",
                 status = status.HTTP_404_NOT_FOUND,
-                exception = f"task with id {task_id} does not exist"
+                exception = f"daily_checklist with id {daily_checklist_id} does not exist"
             )
-        db.delete(task_query)
+        db.delete(daily_checklist_query)
         db.commit()
         return CustomResponse(
                 message = "Succesfully",

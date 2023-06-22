@@ -32,7 +32,6 @@ def get_project_by_id(db: Session, project_id: int):
                 status = status.HTTP_400_BAD_REQUEST
             )
     except Exception as ex:
-        print(ex)
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
 def update_project(db: Session, project_data: ProjectUpdate):
@@ -56,15 +55,12 @@ def update_project(db: Session, project_data: ProjectUpdate):
         )
         return response
     except exc.IntegrityError:
-        print(sys.exc_info())
         return CustomResponse(
             message = "Failed",
             status = status.HTTP_404_NOT_FOUND,
             exception = f"Project with name {project_data.name} already existed"
         )
     except Exception as ex:
-        print(sys.exc_info())
-        print(ex)
         return HTTPException(detail="Something went wrong", status_code=status.HTTP_410_GONE)
 
 
