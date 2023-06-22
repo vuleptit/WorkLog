@@ -6,7 +6,7 @@ from sqlalchemy.types import DateTime
 class DailyChecklist(Base):
     __tablename__ = 'daily_checklist'
     
-    name = Column(String)
+    name = Column(String, unique=True)
     parent_checklist_id = Column(Integer)
     user_id =  Column(Integer, ForeignKey('users.id'))
     is_completed = Column(Boolean)

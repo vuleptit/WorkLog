@@ -5,6 +5,6 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 class Task(Base):
     __tablename__ = 'task'
     
-    name = Column(String)
+    name = Column(String, unique=True)
     project_id = Column(Integer, ForeignKey('project.id'))
-    code_on_jira = Column(Integer)
+    code_on_jira = Column(String)
