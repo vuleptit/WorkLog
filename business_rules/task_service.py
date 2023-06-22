@@ -1,13 +1,28 @@
 from sqlalchemy.orm import Session
-
+from api.utils.custom_response import CustomResponse
+from fastapi import status
 from model.task import *
 from business_rules.view_models.task_dto import *
+
+
+def get_all_tasks(db: Session):
+    tasks = db.query(Task).all()
+    message = "Get users successfully"
+    data=[]
+    for task in tasks:
+        data.append(task.__dict__)
+    response = CustomResponse(
+        message=message,
+        data=data,
+        status=status.HTTP_200_OK
+    )
+    return response
 
 def get_task_by_id(db: Session, task_id: int):
     task_query = db.query(Task).where(Task.id == task_id)
     return task_query.first()
 
-def create_or_update_task(db: Session, task_data: TaskBase):
+def create_task(db: Session, task_data: TaskBase):
     
     if task_data.id <= 0:
         # Create new Task

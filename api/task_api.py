@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from business_rules.task_service import *
 from database_settings import get_db
@@ -10,10 +10,10 @@ def get_task(id: int, db: Session = Depends(get_db)) -> TaskBase:
     task = get_task_by_id(db=db, task_id=id)
     return task
 
-
+    
 @router.post('/create/')
-def register(task_data: TaskBase, db: Session = Depends(get_db)) -> TaskBase:
-    result = create_or_update_task(db=db, task_data=task_data)
+def register(task_data: TaskBase, db: Session = Depends(get_db)):
+    result = create_task(db=db, task_data=task_data)
     return result
 
 

@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, Form, Response, responses
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, ORJSONResponse
 from business_rules.user_services import *
 from database_settings import get_db
-from fastapi.encoders import jsonable_encoder
 from api.utils.custom_response import CustomResponse
 from fastapi import HTTPException
 
