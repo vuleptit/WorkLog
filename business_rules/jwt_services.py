@@ -36,7 +36,7 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(username: str, password: str, *args, **kwargs):
     user = get_user_by_username(username=username)
     if not user:
         return False

@@ -6,3 +6,6 @@ class CustomResponse(BaseModel):
     data: Union[dict, list, None] = None
     status: int
     exception: Union[str, None] = ""
+    
+    class Config:
+        orm_mode = True
