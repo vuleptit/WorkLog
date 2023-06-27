@@ -1,23 +1,40 @@
-import smtplib
-from email.mime.text import MIMEText
+from fastapi import FastAPI
+from starlette.responses import JSONResponse
+from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+from pydantic import EmailStr, BaseModel
+from getpass import getpass
+from typing import List
 
-sender_email = "sender@gmail.com"
-sender_password = "password"
-recipient_email = "recipient@gmail.com"
-subject = "Hello from Python"
-body = """
-<html>
-  <body>
-    <p>This is an <b>HTML</b> email sent from Python using the Gmail SMTP server.</p>
-  </body>
-</html>
-"""
-html_message = MIMEText(body, 'html')
-html_message['Subject'] = subject
-html_message['From'] = sender_email
-html_message['To'] = recipient_email
-with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-   server.login(sender_email, sender_password)
-   server.sendmail(sender_email, recipient_email, html_message.as_string())
-   
-  
+class EmailSchema(BaseModel):
+    email: List[EmailStr]
+
+# password = getpass()
+conf = ConnectionConfig(
+    MAIL_USERNAME = "nguyentrungnghia.cnh@gmail.com",
+    MAIL_PASSWORD = "tsnfblzbovskszqr",
+    MAIL_FROM = "nguyentrungnghia.cnh@gmail.com",
+    MAIL_PORT = 587,
+    MAIL_SERVER = "smtp.gmail.com",
+    MAIL_FROM_NAME="MAIL TITLE",
+    MAIL_STARTTLS = True,
+    MAIL_SSL_TLS = False,
+)
+app = FastAPI()
+
+
+
+@app.post("/email")
+async def simple_send(email: EmailSchema) -> JSONResponse:
+    html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
+
+    message = MessageSchema(
+        subject="Fastapi-Mail module",
+        recipients=email.dict().get("email"),
+        body=html,
+        subtype=MessageType.html
+    )
+
+    fm = FastMail(conf)
+    # print(conf.MAIL_PASSWORD)
+    await fm.send_message(message)
+    return JSONResponse(status_code=200, content={"message": "email has been sent"})
