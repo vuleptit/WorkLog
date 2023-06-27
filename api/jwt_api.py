@@ -15,7 +15,7 @@ async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
-    print(request.headers)
+
     user = authenticate_user(username = form_data.username, password = form_data.password, db=db)
     if not user:
         raise HTTPException(
@@ -35,7 +35,6 @@ async def read_users_me(
     request: Request,
     current_user: UserBase = Depends(get_current_active_user),
 ):
-    print(request.headers['authorization'].replace('Bearer','').strip())
     return current_user
 
 @router.get("/users/me/items/")

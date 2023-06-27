@@ -10,7 +10,7 @@ from common.const import *
 from business_rules.jwt_services import get_user_by_username
 
 def IsAuthenticated(func):
-    print(inspect.signature(func))
+    # print(inspect.signature(func))
     @wraps(func)
     def is_authenticated(*args, **kwargs):
         credentials_exception = HTTPException(
