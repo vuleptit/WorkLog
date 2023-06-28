@@ -1,10 +1,11 @@
 fastapi>=0.68.0,<0.69.0
 pydantic>=1.8.0,<2.0.0
 uvicorn>=0.15.0,<0.16.0
-sqlalchemy>=2.0.15
+sqlalchemy>=2.0.15  
 psycopg2==2.9.6
 alembic>=1.8.1
 python-jose==3.3.0
 passlib==1.7.4  
 python-multipart==0.0.6
 orjson==3.9.1
+fastapi-mail

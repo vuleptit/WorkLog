@@ -17,9 +17,7 @@ PROJECT_ROOT = dirname(dirname(abspath(__file__)))
 SECRET_FILE = normpath(join(PROJECT_ROOT, 'SECRET.key'))
 SECRET_KEY = open(SECRET_FILE).read().strip()
 ALGORITHM = os.environ.get("ALGORITHM")
-print(ALGORITHM)
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
-print(ACCESS_TOKEN_EXPIRE_MINUTES)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

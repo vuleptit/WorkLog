@@ -1,4 +1,4 @@
-from api import user_api, task_api, project_api, jwt_api, dailychecklist_api
+from api import user_api, task_api, project_api, jwt_api, dailychecklist_api, worklog_api, setting_api
 import time
 from fastapi import FastAPI, Request
 from common.middleware import permission
@@ -43,4 +43,14 @@ app.include_router(
     tags=["token"]
 )
 
+app.include_router(
+    worklog_api.router,
+    prefix="/worklog",
+    tags=["worklog"]
+)
 
+app.include_router(
+    setting_api.router,
+    prefix="/setting",
+    tags=["setting"]
+)

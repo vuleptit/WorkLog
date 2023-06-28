@@ -10,6 +10,7 @@ from common.const import *
 from business_rules.jwt_services import get_user_by_username
 
 def IsAuthenticated(func):
+    # print(inspect.signature(func))
     @wraps(func)
     def is_authenticated(*args, **kwargs):
         credentials_exception = HTTPException(
@@ -26,11 +27,11 @@ def IsAuthenticated(func):
                 raise credentials_exception
             token_data = TokenData(username=username)
         except JWTError:
-            print(sys.exc_info())
             raise credentials_exception
         except Exception as ex:
-            print(sys.exc_info())
             raise HTTPException(detail="Not provided credentials", status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+        
+        # User Role
         user = get_user_by_username(username=token_data.username)
         if user is None:
             raise 
