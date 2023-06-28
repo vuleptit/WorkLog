@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request
 from business_rules.project_service import *
 from database_settings import get_db
-
+from common.middleware.permission import IsAuthenticated
 router = APIRouter()
 
+
 @router.get('/all/')
-def get_project(response: Response, db: Session = Depends(get_db)):
+@IsAuthenticated
+def get_project(request: Request, response: Response, db: Session = Depends(get_db)):
     result = get_all_projects(db=db)
     response.status_code = result.status
     return result

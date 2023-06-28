@@ -1,8 +1,8 @@
-from typing import Union
 from api import user_api, task_api, project_api, jwt_api, dailychecklist_api
 import time
-from fastapi import FastAPI, Response, Request
-
+from fastapi import FastAPI, Request
+from common.middleware import permission
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 app = FastAPI()
 
 @app.middleware("http")
@@ -18,11 +18,13 @@ app.include_router(
     prefix="/user",
     tags=["user"]
 )
+
 app.include_router(
     task_api.router,
     prefix="/task",
     tags=["task"]
 )
+
 app.include_router(
     project_api.router,
     prefix="/project",
