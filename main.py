@@ -1,4 +1,4 @@
-from api import user_api, task_api, project_api, jwt_api, dailychecklist_api, worklog_api, setting_api
+from api import send_mail_api, user_api, task_api, project_api, jwt_api, dailychecklist_api, worklog_api, setting_api
 import time
 from fastapi import FastAPI, Request
 from common.middleware import permission
@@ -53,4 +53,10 @@ app.include_router(
     setting_api.router,
     prefix="/setting",
     tags=["setting"]
+)
+
+app.include_router(
+    send_mail_api.router,
+    prefix="/email",
+    tags=["email"]
 )
